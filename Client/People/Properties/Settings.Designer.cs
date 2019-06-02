@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Example.Properties {
+namespace People.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

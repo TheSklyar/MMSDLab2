@@ -14,6 +14,9 @@ sqlcmd -S %server% -C -i ../Server/DB/createdb.sql
 echo ===/Server/Tables/dbo.tRevisionLog.sql===
 sqlcmd -S %server% -d %database% -v dbname=%database%  -C -i ../Server/Tables/dbo.tRevisionLog.sql
 
+echo ===/Server/Tables/dbo.tPeople.sql===
+sqlcmd -S %server% -d %database% -v dbname=%database%  -C -i ../Server/Tables/dbo.tPeople.sql
+
 echo ===/Server/Procedures/dbo.Init.sql===
 sqlcmd -S %server% -d %database% -v dbname=%database%  -C -i ../Server/Procedures/dbo.Init.sql
 
