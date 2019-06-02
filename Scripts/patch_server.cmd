@@ -17,6 +17,12 @@ sqlcmd -S %server% -d %database% -v dbname=%database%  -C -i ../Server/Tables/db
 echo ===/Server/Tables/dbo.tPeople.sql===
 sqlcmd -S %server% -d %database% -v dbname=%database%  -C -i ../Server/Tables/dbo.tPeople.sql
 
+echo ===/Server/Tables/dbo.tBook.sql===
+sqlcmd -S %server% -d %database% -v dbname=%database%  -C -i ../Server/Tables/dbo.tBook.sql
+
+echo ===/Server/Tables/dbo.tPeopleBooks.sql===
+sqlcmd -S %server% -d %database% -v dbname=%database%  -C -i ../Server/Tables/dbo.tPeopleBooks.sql
+
 echo ===/Server/Procedures/dbo.Init.sql===
 sqlcmd -S %server% -d %database% -v dbname=%database%  -C -i ../Server/Procedures/dbo.Init.sql
 

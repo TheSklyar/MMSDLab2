@@ -14,8 +14,10 @@ using Helpers;
 using Helpers.DB;
 using Helpers.Interfaces;
 using System.Windows;
+using Book.Bootstrap;
 using Example.Bootstrap;
 using People.Bootstrap;
+using PeopleBooks.Bootstrap;
 
 namespace Client
 {
@@ -41,6 +43,8 @@ namespace Client
                .Install(new LauncherInstaller())
                .Install(new ExampleInstaller())
                .Install(new PeopleInstaller())
+               .Install(new BookInstaller())
+               .Install(new PeopleBooksInstaller())
                ;
             
         }
