@@ -7,11 +7,11 @@ using Helpers;
 using Helpers.Common;
 using Helpers.Interfaces;
 
-namespace Example.Bootstrap
+namespace People.Bootstrap
 {
-    public class ExampleService:Service
+    public class PeopleService : Service
     {
-        public ExampleService(
+        public PeopleService(
             IWindow parent,
             IGenericFactory factory)
 
@@ -19,17 +19,17 @@ namespace Example.Bootstrap
             _parentWindow = Guard.GetNotNull(parent, "nativeWindow");
             _factory = Guard.GetNotNull(factory, "factory");
 
-            Ident = "{1934d486-3fab-41c4-93e2-43488dde73f1}";
-            Name = "Пример";
-            Description = string.Format("Описание примера");
-            IsVisibleToUser = false;//поменять на true
+            Ident = "{1934d486-3fab-41c4-93e2-43488dde73f2}";
+            Name = "Посетители";
+            Description = string.Format("Постетители библиотеки");
+            IsVisibleToUser = true;//поменять на true
         }
 
         public override bool Execute()
         {
             return ExecutionShield(() =>
             {
-                var orderWindow = _factory.Create<ExampleWindow>();
+                var orderWindow = _factory.Create<PeopleGrid>();
                 orderWindow.Owner = _parentWindow.parent;
                 orderWindow.ShowDialog();
                 return true;
@@ -40,4 +40,3 @@ namespace Example.Bootstrap
         private readonly IWindow _parentWindow;
     }
 }
-

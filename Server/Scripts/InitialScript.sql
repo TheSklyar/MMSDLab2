@@ -11,3 +11,7 @@ go
 CREATE ROLE LibUser
 go
 GRANT execute on Init TO LibUser;
+
+grant select on tPeople to LibUser;
+grant update on tPeople to LibUser;
+grant delete on tPeople to LibUser;

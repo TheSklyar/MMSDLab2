@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B12611C8-CAD5-43CA-866F-203D163E2046}</ProjectGuid>
+    <ProjectGuid>{34D08BA7-978A-4FF7-BF30-ABD1FF0563C7}</ProjectGuid>
     <OutputType>library</OutputType>
-    <RootNamespace>Example</RootNamespace>
-    <AssemblyName>Example</AssemblyName>
+    <RootNamespace>People</RootNamespace>
+    <AssemblyName>People</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -58,10 +58,15 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bootstrap\ExampleInstaller.cs" />
-    <Compile Include="Bootstrap\ExampleService.cs" />
-    <Compile Include="ExampleWindow.xaml.cs">
-      <DependentUpon>ExampleWindow.xaml</DependentUpon>
+    <Compile Include="Bootstrap\PeopleInstaller.cs" />
+    <Compile Include="Bootstrap\PeopleService.cs" />
+    <Compile Include="Data\PeopleFilter.cs" />
+    <Compile Include="Data\SqlCommands.cs" />
+    <Compile Include="PeopleEdit.xaml.cs">
+      <DependentUpon>PeopleEdit.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PeopleGrid.xaml.cs">
+      <DependentUpon>PeopleGrid.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -87,16 +92,20 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="ExampleWindow.xaml">
+    <ProjectReference Include="..\CustomMessageBox\Helpers.csproj">
+      <Project>{9098EAB0-DE85-48C4-AD10-DE79A59A7CBA}</Project>
+      <Name>Helpers</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="PeopleEdit.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CustomMessageBox\Helpers.csproj">
-      <Project>{9098eab0-de85-48c4-ad10-de79a59a7cba}</Project>
-      <Name>Helpers</Name>
-    </ProjectReference>
+    <Page Include="PeopleGrid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
