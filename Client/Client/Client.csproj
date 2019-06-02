@@ -89,6 +89,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Book\Book.csproj">
+      <Project>{4D654CA1-5E8D-4F2A-AD59-856F3EB649BC}</Project>
+      <Name>Book</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CustomMessageBox\Helpers.csproj">
       <Project>{9098eab0-de85-48c4-ad10-de79a59a7cba}</Project>
       <Name>Helpers</Name>

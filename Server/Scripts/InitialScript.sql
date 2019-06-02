@@ -15,3 +15,7 @@ GRANT execute on Init TO LibUser;
 grant select on tPeople to LibUser;
 grant update on tPeople to LibUser;
 grant delete on tPeople to LibUser;
+
+grant select on [tBook] to LibUser;
+grant update on [tBook] to LibUser;
+grant delete on [tBook] to LibUser;
