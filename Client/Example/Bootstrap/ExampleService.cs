@@ -9,7 +9,7 @@ using Helpers.Interfaces;
 
 namespace Example.Bootstrap
 {
-    class ExampleService:Service
+    public class ExampleService:Service
     {
         public ExampleService(
             IWindow parent,
@@ -22,7 +22,7 @@ namespace Example.Bootstrap
             Ident = "{1934d486-3fab-41c4-93e2-43488dde73f1}";
             Name = "Пример";
             Description = string.Format("Описание примера");
-            IsVisibleToUser = false;//поменять на true
+            IsVisibleToUser = true;//поменять на true
         }
 
         public override bool Execute()
