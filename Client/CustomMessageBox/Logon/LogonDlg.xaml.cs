@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -70,7 +71,7 @@ namespace Helpers.Logon
                 this.SetAlias(openFileDialog.FileName, string.Empty);
                 this.path.Text = openFileDialog.FileName;
             }
-                
+
         }
 
         private void OKClick(object sender, RoutedEventArgs e)
@@ -117,5 +118,69 @@ namespace Helpers.Logon
                 CtmMessageBox.Show("Ошибка", ex.Message, ex.StackTrace, this);
             }
         }
+
+        private void RegClick(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(this.password.Password) && !string.IsNullOrWhiteSpace(this.username.Text))
+            {
+                string empty1 = string.Empty;
+                string empty2 = string.Empty;
+                try
+                {
+                    if (this._xElement == null | this.Alias.SelectedItem == null)
+                        return;
+                    foreach (var data in this._xElement.Elements((XName)"machine").Where<XElement>((Func<XElement, bool>)(d => d.Attribute((XName)"alias").Value == this.Alias.SelectedItem.ToString())).Select(d =>
+                    {
+                        var data = new
+                        {
+                            server = d.Element((XName)"server"),
+                            database = d.Element((XName)"database")
+                        };
+                        return data;
+                    }).Take(1))
+                    {
+                        empty1 = data.server.Value;
+                        empty2 = data.database.Value;
+                    }
+                    this.connectionString = string.Format("server={0};uid={1};pwd={2};database={3};Application Name={4}", (object)empty1, "Administrator", "123456789", (object)empty2, (object)this.AppName);
+                    int res = 0;
+                    var _connection = new SqlConnection(this.connectionString);
+                    using (var command = new SqlCommand(AddNewUser.Replace("@Pass", this.password.Password).Replace("@User", this.username.Text).Replace("@Base", empty2), _connection))
+                    {
+                        
+                        //if (!command.Parameters.Contains("@Pass"))
+                        //{
+                        //    command.Parameters.AddWithValue("@Pass", this.password.Password);
+                        //}
+                        //if (!command.Parameters.Contains("@User"))
+                        //{
+                        //    command.Parameters.AddWithValue("@User", this.username.Text);
+                        //}
+                        //if (!command.Parameters.Contains("@Base"))
+                        //{
+                        //    command.Parameters.AddWithValue("@Base", (object)empty2);
+                        //}
+                        _connection.Open();
+                        res = Convert.ToInt32(command.ExecuteScalar());
+                        _connection.Close();
+                    }
+
+                    MessageBox.Show("Пользователь успешно создан, осуществляется вход в систему.");
+                    OKClick(null, null);
+                }
+                catch (Exception ex)
+                {
+                    CtmMessageBox.Show("Ошибка", ex.Message, ex.StackTrace, this);
+                }
+            }
+        }
+
+        public string AddNewUser = @"
+            CREATE LOGIN @User WITH PASSWORD = '@Pass'
+            ,DEFAULT_DATABASE = @Base
+            USE @Base;
+            CREATE USER @User FOR LOGIN @User;
+            EXEC sp_addrolemember 'LibUser', '@User'
+";
     }
 }
