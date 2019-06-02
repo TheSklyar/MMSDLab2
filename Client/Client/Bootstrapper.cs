@@ -15,6 +15,7 @@ using Helpers.DB;
 using Helpers.Interfaces;
 using System.Windows;
 using Example.Bootstrap;
+using People.Bootstrap;
 
 namespace Client
 {
@@ -39,6 +40,7 @@ namespace Client
                .Install(new CoreInstaller())
                .Install(new LauncherInstaller())
                .Install(new ExampleInstaller())
+               .Install(new PeopleInstaller())
                ;
             
         }

@@ -97,6 +97,10 @@
       <Project>{B12611C8-CAD5-43CA-866F-203D163E2046}</Project>
       <Name>Example</Name>
     </ProjectReference>
+    <ProjectReference Include="..\People\People.csproj">
+      <Project>{34D08BA7-978A-4FF7-BF30-ABD1FF0563C7}</Project>
+      <Name>People</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
