@@ -14,43 +14,75 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using Book.Data;
+using Book;
 using Helpers;
 using Helpers.Common;
 using Helpers.DB;
 using Helpers.Enums;
-using Helpers.Interfaces;
+using People;
+using PeopleBooks.Data;
 
-namespace Book
+namespace PeopleBooks
 {
     /// <summary>
-    /// Логика взаимодействия для BookGrid.xaml
+    /// Логика взаимодействия для PeopleBooksWindow.xaml
     /// </summary>
-    public partial class BookGrid : Window, IGridWindow
+    public partial class PeopleBooksWindow : Window
     {
         private readonly ConnectionSettings _connectionSettings;
         private int _CurrentPage, _TotalPages;
         private SqlCommand _BufCommand;
         private int displayIndex;
-        private BookFilter Filter;
-        private bool fromOtherView = false;
+        private PeopleBooksFilter Filter;
         private ListSortDirection listSortDirection;
-        public BookGrid(ConnectionSettings connectionSettings, bool fromOtherView = false)
+        public PeopleBooksWindow(ConnectionSettings connectionSettings)
         {
-            this.fromOtherView = fromOtherView;
             _connectionSettings = Guard.GetNotNull(connectionSettings, "connectionSettings");
             InitializeComponent();
-            Filter = new BookFilter(connectionSettings);
+            Filter = new PeopleBooksFilter(connectionSettings);
             DataContext = Filter;
-            
             CountPages();
             InitTable();
             SetFiltersToNull();
-            Filter_Click(null, null);
         }
 
+        private void Ord_click(object sender, RoutedEventArgs e)
+        {
+            var cds = new PeopleGrid(_connectionSettings, true);
+            cds.Owner = this;
+            cds.ShowDialog();
+            if (TemporaryStorage.Holder.TryGetValue("ID", out string ID))
+            {
+                SetFiltersToNull();
+                Filter.ReaderNumFilterText = ID;
+                CountPages();
+                var _connection = new SqlConnection(_connectionSettings.ConnectionString);
+                listSortDirection = Order.SelectedIndex == 0 ? ListSortDirection.Ascending : ListSortDirection.Descending;
+                _BufCommand = new SqlCommand(DBHelper.FormSqlGrid(displayIndex, listSortDirection, Filter._filters, Filter.TableSourceForSort, SqlCommands.GridPart1, SqlCommands.GridByPagePart2), _connection);
+                _BufCommand.CommandTimeout = 30;
+                UpdateGrid();
+            }
+            TemporaryStorage.Holder.Remove("ID");
+        }
 
-
+        private void Mon_click(object sender, RoutedEventArgs e)
+        {
+            var cds = new BookGrid(_connectionSettings, true);
+            cds.Owner = this;
+            cds.ShowDialog();
+            if (TemporaryStorage.Holder.TryGetValue("ID", out string ID))
+            {
+                SetFiltersToNull();
+                Filter.BookNumFilterText = ID;
+                CountPages();
+                var _connection = new SqlConnection(_connectionSettings.ConnectionString);
+                listSortDirection = Order.SelectedIndex == 0 ? ListSortDirection.Ascending : ListSortDirection.Descending;
+                _BufCommand = new SqlCommand(DBHelper.FormSqlGrid(displayIndex, listSortDirection, Filter._filters, Filter.TableSourceForSort, SqlCommands.GridPart1, SqlCommands.GridByPagePart2), _connection);
+                _BufCommand.CommandTimeout = 30;
+                UpdateGrid();
+            }
+            TemporaryStorage.Holder.Remove("ID");
+        }
 
         public void InitTable()
         {
@@ -95,14 +127,7 @@ namespace Book
         {
             if (sender is DataGridRow row)
             {
-
-                if (fromOtherView)
-                {
-                    TemporaryStorage.Holder.Add("ID", ((DataRowView)row.Item).Row.ItemArray[1].ToString());
-                    this.Close();
-                    return;
-                }
-                var edt = new BookEdit(_connectionSettings, OpenType.View, Convert.ToInt32(((DataRowView)row.Item).Row.ItemArray[1].ToString()));
+                var edt = new OrderEdit(_connectionSettings, OpenType.View, Convert.ToInt32(((DataRowView)row.Item).Row.ItemArray[1].ToString()));
                 edt.Owner = this;
                 edt.ShowDialog();
                 UpdatePageCount();
@@ -112,17 +137,8 @@ namespace Book
 
         public void SetFiltersToNull()
         {
-            Filter.NameFilterText = "";
-            if (fromOtherView)
-            {
-                Filter.NotInHands = true;
-                InHands.IsEnabled = false;
-            }
-            else
-            {
-                Filter.NotInHands = false;
-                InHands.IsEnabled = true;
-            }
+            Filter.BookNumFilterText = "";
+            Filter.ReaderNumFilterText = "";
         }
 
         public void UpdateGrid()
@@ -197,9 +213,11 @@ namespace Book
             UpdateGrid();
         }
 
+
+
         private void Create_Click(object sender, RoutedEventArgs e)
         {
-            var edt = new BookEdit(_connectionSettings, OpenType.New);
+            var edt = new OrderEdit(_connectionSettings, OpenType.New);
             edt.Owner = this;
             edt.ShowDialog();
             UpdatePageCount();
@@ -211,13 +229,11 @@ namespace Book
             if (UserGrid.SelectedItem != null)
             {
                 DataRowView row = UserGrid.SelectedItem as DataRowView;
-                var edt = new BookEdit(_connectionSettings, OpenType.Edit, Convert.ToInt32(row.Row.ItemArray[1]));
+                var edt = new OrderEdit(_connectionSettings, OpenType.Edit, Convert.ToInt32(row.Row.ItemArray[1]));
                 edt.Owner = this;
                 edt.ShowDialog();
                 UpdatePageCount();
                 UpdateGrid();
-
-
             }
         }
 
@@ -227,7 +243,7 @@ namespace Book
             {
                 DataRowView row = UserGrid.SelectedItem as DataRowView;
                 if (MessageBox.Show(
-                        "Вы уверены, что хотите удалить книгу с ID " + row.Row.ItemArray[1].ToString() + "?",
+                        "Вы уверены, что хотите удалить заказ " + row.Row.ItemArray[1].ToString() + "?",
                         "Удаление", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
                     var _connection = new SqlConnection(_connectionSettings.ConnectionString);
@@ -239,29 +255,18 @@ namespace Book
                         }
 
                         _connection.Open();
-                        try
+                        if (0 == command.ExecuteNonQuery())
                         {
-                            if (0 == command.ExecuteNonQuery())
-                            {
-                                MessageBox.Show(
-                                    "Внимание! Книга на руках у посетителя и она не может быть удален без возврата!");
-                            }
+                            MessageBox.Show("Произошла ошибка при удалении");
                         }
-                        catch
-                        {
-                            MessageBox.Show(
-                                "Внимание! Книга на руках у посетителя и она не может быть удален без возврата!");
-                        }
-                        finally
-                        {
-                            _connection.Close();
-                        }
-
+                        _connection.Close();
                     }
                     UpdatePageCount();
                     UpdateGrid();
                 }
             }
         }
+
+
     }
 }
